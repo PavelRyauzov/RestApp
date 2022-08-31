@@ -1,6 +1,7 @@
 package ru.ryauzov.restexample.entities;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 @Entity

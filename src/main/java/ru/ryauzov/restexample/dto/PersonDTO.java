@@ -5,8 +5,10 @@ import ru.ryauzov.restexample.entities.Gender;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
+@JsonRootName("person")
 public class PersonDTO {
     @NotBlank(message = "Name is blank")
     private String name;
