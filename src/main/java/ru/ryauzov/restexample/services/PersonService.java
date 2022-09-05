@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface PersonService {
     void send(PersonDTO personDTO);
-    List<PersonEntity> getPeople();
 }
