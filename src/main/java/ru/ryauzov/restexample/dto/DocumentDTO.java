@@ -7,8 +7,12 @@ import ru.ryauzov.restexample.entities.DocumentType;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
+@XmlRootElement(name = "document")
 public class DocumentDTO {
     @NotBlank(message = "Series is blank")
     @Size(min = 4, max = 4, message = "Series length should be 4")
@@ -25,6 +29,7 @@ public class DocumentDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date issueDate;
 
+    @XmlAttribute(name = "series")
     public String getSeries() {
         return series;
     }
@@ -33,6 +38,7 @@ public class DocumentDTO {
         this.series = series;
     }
 
+    @XmlAttribute(name = "number")
     public String getNumber() {
         return number;
     }
@@ -41,6 +47,7 @@ public class DocumentDTO {
         this.number = number;
     }
 
+    @XmlAttribute(name = "type")
     public DocumentType getType() {
         return type;
     }
@@ -49,6 +56,7 @@ public class DocumentDTO {
         this.type = type;
     }
 
+    @XmlAttribute(name = "issueDate")
     public Date getIssueDate() {
         return issueDate;
     }

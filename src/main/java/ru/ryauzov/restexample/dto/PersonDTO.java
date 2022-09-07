@@ -5,9 +5,14 @@ import ru.ryauzov.restexample.entities.Gender;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 @JsonRootName("person")
+@XmlRootElement(name = "person")
 public class PersonDTO {
     @NotBlank(message = "Name is blank")
     private String name;
@@ -27,6 +32,7 @@ public class PersonDTO {
     @NotNull(message = "Document is null")
     private DocumentDTO document;
 
+    @XmlAttribute(name = "name")
     public String getName() {
         return name;
     }
@@ -35,6 +41,7 @@ public class PersonDTO {
         this.name = name;
     }
 
+    @XmlAttribute(name = "surname")
     public String getSurname() {
         return surname;
     }
@@ -43,6 +50,7 @@ public class PersonDTO {
         this.surname = surname;
     }
 
+    @XmlAttribute(name = "patronymic")
     public String getPatronymic() {
         return patronymic;
     }
@@ -51,6 +59,7 @@ public class PersonDTO {
         this.patronymic = patronymic;
     }
 
+    @XmlAttribute(name = "birthDate")
     public Date getBirthDate() {
         return birthDate;
     }
@@ -59,6 +68,7 @@ public class PersonDTO {
         this.birthDate = birthDate;
     }
 
+    @XmlAttribute(name = "gender")
     public Gender getGender() {
         return gender;
     }
@@ -67,6 +77,7 @@ public class PersonDTO {
         this.gender = gender;
     }
 
+    @XmlElement(name = "document")
     public DocumentDTO getDocument() {
         return document;
     }
