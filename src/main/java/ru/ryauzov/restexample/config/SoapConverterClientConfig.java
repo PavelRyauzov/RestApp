@@ -6,7 +6,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import ru.ryauzov.restexample.client.SoapConverterClient;
 
 @Configuration
-public class SoapConverterClientConfiguration {
+public class SoapConverterClientConfig {
     @Bean
     public Jaxb2Marshaller marshaller() {
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();

@@ -25,13 +25,4 @@ public class PersonController {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
     }
-
-    @GetMapping("/send-person-json")
-    public ResponseEntity getPeople() {
-        try {
-            return ResponseEntity.ok("Сервер работает!");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Произошла ошибка");
-        }
-    }
 }

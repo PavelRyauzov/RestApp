@@ -2,9 +2,9 @@ package ru.ryauzov.restexample.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Service;
 import ru.ryauzov.restexample.client.SoapConverterClient;
 import ru.ryauzov.restexample.dao.PersonDAO;
@@ -16,7 +16,6 @@ import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.File;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 
@@ -24,25 +23,26 @@ import java.text.SimpleDateFormat;
 @Service
 public class PersonServiceImpl implements PersonService {
     private final PersonDAO personDAO;
-    private final ObjectMapper mapper;
     private final SoapConverterClient soapConverterClient;
 
     @Autowired
-    public PersonServiceImpl(PersonDAO personDAO, ObjectMapper mapper, SoapConverterClient soapConverterClient) {
+    public PersonServiceImpl(PersonDAO personDAO, SoapConverterClient soapConverterClient) {
         this.personDAO = personDAO;
-        this.mapper = mapper;
         this.soapConverterClient = soapConverterClient;
     }
 
     @Override
     @Transactional
     public void send(PersonDTO personDTO) {
-        PersonEntity person = mapper.convertValue(personDTO, PersonEntity.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        PersonEntity person = objectMapper.convertValue(personDTO, PersonEntity.class);
         personDAO.create(person);
 
-        XmlMapper xmlMapper = new XmlMapper();
+        ObjectMapper xmlMapper = new XmlMapper();
         xmlMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
+        xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
         String xmlText;
+
         try {
             xmlText = xmlMapper.writeValueAsString(personDTO);
             GetConvertedXmlResponse response = soapConverterClient.getConvertedXml(xmlText);
@@ -50,9 +50,9 @@ public class PersonServiceImpl implements PersonService {
             JAXBContext jaxbContext = JAXBContext.newInstance(PersonDTO.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
-            PersonDTO testDTO = (PersonDTO) jaxbUnmarshaller.unmarshal(new StringReader(response.getConvertedXmlText()));
-            PersonEntity testEntity = mapper.convertValue(testDTO, PersonEntity.class);
-            personDAO.create(testEntity);
+            PersonDTO convertedPersonDTO = (PersonDTO) jaxbUnmarshaller.unmarshal(new StringReader(response.getConvertedXmlText()));
+            PersonEntity convertedPersonEntity = objectMapper.convertValue(convertedPersonDTO, PersonEntity.class);
+            personDAO.create(convertedPersonEntity);
         } catch (JsonProcessingException | JAXBException e) {
             e.printStackTrace();
         }
