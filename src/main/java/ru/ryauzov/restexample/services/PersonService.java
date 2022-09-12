@@ -6,5 +6,5 @@ import ru.ryauzov.restexample.entities.PersonEntity;
 import java.util.List;
 
 public interface PersonService {
-    void send(PersonDTO personDTO);
+    void send(PersonDTO personDTO) throws Exception;
 }

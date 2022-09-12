@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.ryauzov.restexample.client.SoapConverterClient;
@@ -21,6 +22,7 @@ import java.text.SimpleDateFormat;
 
 
 @Service
+@Log4j2
 public class PersonServiceImpl implements PersonService {
     private final PersonDAO personDAO;
     private final SoapConverterClient soapConverterClient;
@@ -33,18 +35,19 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     @Transactional
-    public void send(PersonDTO personDTO) {
+    public void send(PersonDTO personDTO) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         PersonEntity person = objectMapper.convertValue(personDTO, PersonEntity.class);
+
         personDAO.create(person);
 
         ObjectMapper xmlMapper = new XmlMapper();
         xmlMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
         xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        String xmlText;
 
         try {
-            xmlText = xmlMapper.writeValueAsString(personDTO);
+            String xmlText = xmlMapper.writeValueAsString(personDTO);
+
             GetConvertedXmlResponse response = soapConverterClient.getConvertedXml(xmlText);
 
             JAXBContext jaxbContext = JAXBContext.newInstance(PersonDTO.class);
@@ -52,9 +55,9 @@ public class PersonServiceImpl implements PersonService {
 
             PersonDTO convertedPersonDTO = (PersonDTO) jaxbUnmarshaller.unmarshal(new StringReader(response.getConvertedXmlText()));
             PersonEntity convertedPersonEntity = objectMapper.convertValue(convertedPersonDTO, PersonEntity.class);
-            personDAO.create(convertedPersonEntity);
         } catch (JsonProcessingException | JAXBException e) {
-            e.printStackTrace();
+            log.error("Exception is thrown", e);
+            throw new Exception("Exception in PersonService");
         }
     }
 }
